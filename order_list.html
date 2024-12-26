@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order List</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui-src/dist/css/layui.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .password-section {
+      margin-bottom: 20px;
+    }
+    .order-list {
+      display: none;
+      margin-top: 20px;
+    }
+    .order-item {
+      padding: 15px;
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .order-item p {
+      margin: 5px 0;
+    }
+    .order-item strong {
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: line-block;
+    }
+    .error-msg {
+      color: red;
+      display: none;
+    }
+    .layui-btn {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Order List</h2>
+
+  <!-- 输入密码 -->
+  <div class="password-section">
+    <label for="password">Enter Password:</label>
+    <input type="password" name='password' id="password" class="layui-input" placeholder="Enter password" />
+    <button class="layui-btn layui-btn-primary" id="verifyPasswordBtn">Verify Password</button>
+    <p id="error-msg" class="error-msg">Incorrect password. Please try again.</p>
+  </div>
+
+  <!-- 订列表 -->
+  <div class="order-list" id="orderList">
+    <h3>Order Details</h3>
+    <div id="orders"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/layui-src/dist/layui.js"></script>
+<script>
+  layui.use(['layer', 'jquery'], function () {
+    var $ = layui.jquery;
+    var layer = layui.layer;
+
+    // 密码验按点击事件
+    $('#verifyPasswordBtn').on('click', function() {
+      var enteredPassword = $('#password').val();
+ 
+
+        // 通过 Ajax 请求单数据
+        $.ajax({
+          url: 'orderList.php', // 后端 PHP 页面
+          method: 'GET',
+          data: { password: enteredPassword },
+          dataType: 'json', // 期望返 JSON 式的
+          success: function(response) {
+            if (response.status === 'success') {
+                $('#orderList').show();
+                $('#error-msg').hide();
+              // 订单据示
+              var ordersHtml = '';
+              response.orders.forEach(function(order) {
+                  var pay_status = '';
+                  if(order.status == 0){
+                      pay_status = 'Pending';
+                  }else{
+                      pay_status = 'Success';
+                  }
+                ordersHtml += `
+                  <div class="order-item">
+                    <strong>Order #${order.orderId}</strong>
+                    <p><strong>Username:</strong> ${order.name}</p>
+       <p><strong>Amount:</strong> ${order.currency} ${order.amount}</p>
+                    <p><strong>Status:</strong> ${pay_status}</p>
+                    <p><strong>Date:</strong> ${order.paymentTime}</p>
+                  </div>
+                `;
+              });
+              $('#orders').html(ordersHtml); // 将订数据插入到面
+            } else {
+              layer.msg('Error loading orders: ' + response.message, {icon: 2});
+            }
+          },
+          error: function() {
+            layer.msg('Error fetching orders. Please try again.', {icon: 2});
+          }
+        });
+      });
+       
+     
+  });
+</script>
+
+</body>
+</html>

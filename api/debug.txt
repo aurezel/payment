@@ -1,0 +1,134 @@
+test:23{
+  "id": "evt_1QWyzwRxxm4qcaekhb7Kuw96",
+  "object": "event",
+  "api_version": "2024-10-28.acacia",
+  "created": 1734435092,
+  "data": {
+    "object": {
+      "id": "cs_test_a1etllpbKvE2HrObsGYAyeTFd82uc8NUgahaD858tG0PPl7TYcbmBCGMy2",
+      "object": "checkout.session",
+      "adaptive_pricing": {
+        "enabled": true
+      },
+      "after_expiration": null,
+      "allow_promotion_codes": null,
+      "amount_subtotal": 8099,
+      "amount_total": 8099,
+      "automatic_tax": {
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "billing_address_collection": null,
+      "cancel_url": "https://checkout.trendmuse.shop/api/cancel.html",
+      "client_reference_id": null,
+      "client_secret": null,
+      "consent": null,
+      "consent_collection": null,
+      "created": 1734435073,
+      "currency": "usd",
+      "currency_conversion": null,
+      "custom_fields": [
+
+      ],
+      "custom_text": {
+        "after_submit": null,
+        "shipping_address": null,
+        "submit": null,
+        "terms_of_service_acceptance": null
+      },
+      "customer": null,
+      "customer_creation": "if_required",
+      "customer_details": {
+        "address": {
+          "city": null,
+          "country": "US",
+          "line1": null,
+          "line2": null,
+          "postal_code": "56078",
+          "state": null
+        },
+        "email": "28tecpet@gmail.com",
+        "name": "red",
+        "phone": null,
+        "tax_exempt": "none",
+        "tax_ids": [
+
+        ]
+      },
+      "customer_email": null,
+      "expires_at": 1734521473,
+      "invoice": null,
+      "invoice_creation": {
+        "enabled": false,
+        "invoice_data": {
+          "account_tax_ids": null,
+          "custom_fields": null,
+          "description": null,
+          "footer": null,
+          "issuer": null,
+          "metadata": {
+          },
+          "rendering_options": null
+        }
+      },
+      "livemode": false,
+      "locale": null,
+      "metadata": {
+        "order_id": "order_676143b8da447"
+      },
+      "mode": "payment",
+      "payment_intent": "pi_3QWyzvRxxm4qcaek0KyMg6LO",
+      "payment_link": null,
+      "payment_method_collection": "if_required",
+      "payment_method_configuration_details": {
+        "id": "pmc_1QVUcdRxxm4qcaekXYdNy7uM",
+        "parent": null
+      },
+      "payment_method_options": {
+        "card": {
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card",
+        "klarna",
+        "link",
+        "affirm",
+        "cashapp",
+        "amazon_pay"
+      ],
+      "payment_status": "paid",
+      "phone_number_collection": {
+        "enabled": false
+      },
+      "recovered_from": null,
+      "saved_payment_method_options": null,
+      "setup_intent": null,
+      "shipping_address_collection": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "shipping_options": [
+
+      ],
+      "status": "complete",
+      "submit_type": null,
+      "subscription": null,
+      "success_url": "https://checkout.trendmuse.shop/api/success.php",
+      "total_details": {
+        "amount_discount": 0,
+        "amount_shipping": 0,
+        "amount_tax": 0
+      },
+      "ui_mode": "hosted",
+      "url": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": null,
+    "idempotency_key": null
+  },
+  "type": "checkout.session.completed"
+}Stripe Signature Header: t=1734726932,v1=cd361f438e1d50765a0836ef8b1e85c0d2bcb46ad263bfd298a4cd5e08a15172

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui-src/dist/css/layui.css" />
+  <style>
+    .layui-layer-content {
+      padding: 20px;
+    }
+    .layui-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .layui-btn {
+      width: 100%;
+    }
+    .layui-layer-btn {
+      text-align: center;
+    }
+    .layui-layer-btn a {
+      margin: 0 auto;
+    }
+    .layui-btn-copy {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layui-container" style="margin-top: 50px;">
+    <form class="layui-form" id="myForm" method="get">
+      <div class="layui-form-item">
+        <label class="layui-form-label">Name</label>
+        <div class="layui-input-block">
+          <input type="text" name="account" required lay-verify="required" placeholder="Name" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">Amount</label>
+        <div class="layui-input-block">
+          <input type="number" name="amount" required lay-verify="required|number" placeholder="Amount" class="layui-input">
+        </div>
+      </div>
+<div class="layui-form-item">
+        <label class="layui-form-label">Currency</label>
+        <div class="layui-input-block">
+          <select name="currency" required lay-verify="required"  class="layui-input">
+		  <option value='CNY'>CNY - 人民币</option>
+		  <option value='MYR'>MYR - 马来西亚林吉特</option>
+		  <option value='TWD'>TWD - 新台币</option>
+		  <option value='HKD'>HKD - 港元</option>
+		  <option value='SGD'>SGD - 新加坡元</option>
+		  <option value='THB'>THB - 泰铢</option>
+		  <option value='VND'>VND - 越南盾</option>
+		  <option value='PHP'>PHP - 菲律宾比索</option>
+		  <option value='MOP'>MOP - 澳门元</option>
+		  <option value='JPY'>JPY - 日元</option>
+		  <option value='AUD'>AUD - 澳大利亚币</option>
+		  <option value='NZD'>NZD - 新西兰</option>
+		  <option value='IDR'>IDR - 印尼盾</option>
+		  <option value='KRW'>KRW - 韩元</option>
+		  <option value='NGN'>NGN - 尼日利亚奈拉</option>
+		  <option value='EUR'>EUR - 欧元</option>
+		  <option value='GBP'>GBP - 英镑</option>
+		  <option value='CAD'>CAD - 加拿大元</option>
+		  <option value='AED'>AED - 迪拉姆</option>
+		  <option value='SAR'>SAR - 里亚尔</option>
+		  <option value='EGP'>EGP - 埃及镑</option>
+		  <option value='USD' selected>USD - 美元</option>
+	  </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="order_btn save_address_btn control-checkout-pay_btn layui-btn" lay-submit lay-filter="submitForm">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/layui-src/dist/layui.js"></script>
+  <script>
+    layui.use(['form', 'layer', 'jquery'], function () {
+      var form = layui.form,
+          layer = layui.layer,
+          $ = layui.jquery;
+
+      // 表单提交监听
+      form.on('submit(submitForm)', function(data) {
+        // 表提交成功时执行的回调
+        $.ajax({
+          url: 'result.php', // 后端处理的 PHP 页面
+          method: 'POST',
+          data: data.field, // 提交表单数据
+          dataType: 'json', // 期望返回 JSON 格式的响应
+          success: function(response) {
+            if (response.status === 'success') {
+              // 使用 layui 弹窗示返回的链接
+              layer.open({
+                type: 1, // 页面层
+                title: 'Generate Link', // 弹窗标题
+                content: '<input type="text" value="' + response.link + '" class="layui-input" readonly>' +
+                         '<button class="layui-btn layui-btn-sm layui-btn-primary" id="copyBtn">制链接</button>', // 弹窗内容
+                area: ['400px', '250px'], // 弹窗大
+                success: function(layero, index) {
+                  // 复制按钮的点事件
+                  $('#copyBtn').on('click', function() {
+                    var input = layero.find('input')[0]; // 取弹窗中的输入框
+                    input.select();
+                    input.setSelectionRange(0, 99999); // 适移动端
+
+                    // 执行复制操作
+                    try {
+                      var successful = document.execCommand('copy');
+                      if (successful) {
+                        layer.msg('复制成功!', {icon: 1});
+                      } else {
+                        layer.msg('复制失败，请手动制！', {icon: 2});
+                      }
+                    } catch (err) {
+                      layer.msg('复制失!', {icon: 2});
+                    }
+                  });
+                }
+              });
+            } else {
+              // 错误提示
+              layer.msg('Failure：' + response.message, {icon: 2});
+            }
+          },
+          error: function() {
+            layer.msg('服务器求失败，请重试', {icon: 2});
+          }
+        });
+
+        // 阻止表单的默提交
+        return false;
+      });
+    });
+  </script>
+</body>
+</html>

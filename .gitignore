@@ -1,0 +1,4 @@
+*.json
+*.csv
+config.php
+#git rm -r --cached .

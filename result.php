@@ -31,6 +31,7 @@ switch($act){
         if ($username === 'admin' && $password === 'As1234') {
             $session = new Session();  // 创建 Session 对象
             $session->login($username);  // 设置登录状态
+            $_SESSION['username'] = $username;
             $response = [
                 'code' => 200,
                 'status' => 'success',

@@ -1,10 +1,11 @@
 <?php
-require_once 'Session.php';
-
-$session = new Session();  // 创建 Session 对象
-$session->checkSessionTimeout();  // 检查会话是否超时
 require_once 'vendor/autoload.php';
 require_once 'config.php';
+require_once 'session.php';
+if(!$_SESSION['username']){
+    header("Location: login.php");  // 跳转到登录页面
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">

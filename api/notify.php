@@ -11,8 +11,14 @@ $endpoint_secret = WEBHOOK_KEY; // "whsec_BZF7iXTP9IW9wDeIwRasskPiFmUYq9xK";//"w
 // 获取原请求体名
 $input = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-@file_put_contents("debug.txt", "Stripe Signature Header: " . $_SERVER['HTTP_STRIPE_SIGNATURE'] . "\n", FILE_APPEND);
- 
+
+$decodedInput = json_decode($input, true);
+if ($decodedInput !== null) {
+    $compressedInput = json_encode($decodedInput); // 压缩 JSON 数据
+} else {
+    $compressedInput = $input; // 保留原始数据（如果不是 JSON 格式）
+}
+@file_put_contents("debug.log", $compressedInput . "\n", FILE_APPEND);
 $event = null;
  
 try {
@@ -46,11 +52,24 @@ switch ($event->type) {
  
         // 取款户（如果
         $customer_id = $session->customer;
-        updateOrder($order_id, ['status'=> 2], '../orders.json'); 
+        if ($session->payment_status === 'paid') {
+            $order = getOrder($order_id);
+            if(!empty($order)){
+                if($order['status'] == 0){
+                    updateOrder($order_id, ['status'=> 1], '../orders.json');
+                }else{
+                    $order['note'] = 'Repeat Orders';
+                    $order['status'] = 1;
+                    createOrder($order);
+                }
+            }
+
+        }
+
         // 这行外的操发件、更库存等
         error_log("Payment for Order $order_id was successful. customer_id ID: $customer_id");
         break;
-
+    case '':
     default:
         // 事没处
         error_log('Unhandled event type ' . $event->type);

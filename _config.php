@@ -1,10 +1,10 @@
-<?php 
+<?php
 
-define("DOMAIN_PATH",'https://witrugo.com/'); //ser
-define("WEBHOOK_KEY","whsec_lYmldmq2GfSjdTL9uCS5perRLqENpijK");
+define("DOMAIN_PATH",'');
+define("WEBHOOK_KEY","");
 
-define("PERMARY_KEY_LIVE",'pk_test_51QRqwtP5ytAfp9h7V5hyNaX1rMMukORWer2a6hT8LjhPEScNBqFnlY3O65s7yxfz42aPq82W5m8UeF9ZcFolEyXM00sohfeX4u');
-define("SECRET_KEY_LIVE",'sk_test_51QRqwtP5ytAfp9h739lA4zcxZze29FDylruIgfZ2BlDgGOsHUyjlpIzypqnqTklqQ8oIFBNlG4NxOSFuvz5HsK1b00zKgfURNc');
+define("PERMARY_KEY_LIVE",'');
+define("SECRET_KEY_LIVE",'');
 
 
 define("SECRET_KEY_TEST",'');
@@ -14,6 +14,7 @@ define("FILENAME_JSON",'orders.json');
 define("PRICE_CSV",'product.csv');
 define("PRICE_TEST_CSV",'product_test.csv');
 define("CURRENCY_LIMIT",serialize(["BIF","CLP","GNF","JPY","KMF","KRW","MGA","PYG","RWF","UGX","VND","VUV","XAF","XOF","DJF","XPF"]));
+define("CURRENCY_SUPPORT",serialize(["CNY","MYR","TWD","HKD","SGD","THB","VND","PHP","MOP","JPY","AUD","NZD","IDR","KRW","NGN","EUR","GBP","CAD","AED","SAR","EGP","USD"]));
 
 /**
  * 读取 orders.json 文件并返回订单数据。
@@ -36,7 +37,27 @@ function readOrders($filename = 'orders.json') {
 
     return [];  // 文件不存在，返回空数组
 }
+function getOrder($orderId, $filename = 'orders.json') {
+    $orders = readOrders($filename);
+    foreach ($orders as $order) {
+        if ($order['orderId'] == $orderId) {
+            return $order;
+        }
+    }
+    return null; // 未找到订单
+}
 
+
+function createOrder($newOrder, $filename = 'orders.json') {
+    $orders = readOrders($filename);
+
+    // 添加唯一订单 ID
+    $newOrder['orderId'] = 'order_' . uniqid();
+    $orders[] = $newOrder;
+
+    // 写入更新后的订单数据
+    return writeOrders($orders, $filename) ? $newOrder : false;
+}
 /**
  * 修改订数，根据订单 ID 更新状态或其他信息。
  *
@@ -53,7 +74,7 @@ function updateOrder($orderId, $updatedData, $filename = 'orders.json') {
     foreach ($orders as $index => $order) {
         if ($order['orderId'] == $orderId) {
             // 更新订单数据
-            $orders[$index] = array_merge($order, $updatedData); 
+            $orders[$index] = array_merge($order, $updatedData);
         }
     }
 
@@ -79,4 +100,54 @@ function writeOrders($orders, $filename = 'orders.json') {
 
     // 将编码后的数据写入文件
     return file_put_contents($filename, $jsonData) !== false;
+}
+
+function downloadOrdersAsCSV($filename = 'orders.json') {
+    $orders = readOrders($filename);
+
+    if (empty($orders)) {
+        die("No orders available to export.");
+    }
+
+    // 设置表头
+    $headers = [
+        "订单编号",
+        "用户名",
+        "订单状态",
+        "订单金额",
+        "货币",
+        "  创建时间  ",
+        "订单备注"
+    ];
+
+    // 设置 HTTP 头以触发下载
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="orders.csv"');
+
+    // 打开输出流
+    $output = fopen('php://output', 'w');
+    fputcsv($output, $headers);
+
+    // 写入订单数据
+    foreach ($orders as $order) {
+        $status = "";
+        if($order['status'] == 1){
+            $status = "已支付";
+        }elseif($order['status'] == 2){
+            $status = "已取水";
+        }else{
+            $status = "待支付";
+        }
+        fputcsv($output, [
+            $order['orderId'] ?? '',
+            $order['name'] ?? '',
+            $status,
+            $order['amount'] ?? '',
+            $order['currency'] ?? '',
+            $order['paymentTime'] ?? '',
+            $order['note'] ?? ''
+        ]);
+    }
+    fclose($output);
+    exit;
 }

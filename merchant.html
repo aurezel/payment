@@ -92,7 +92,7 @@
       form.on('submit(submitForm)', function(data) {
         // 表提交成功时执行的回调
         $.ajax({
-          url: 'result.php', // 后端处理的 PHP 页面
+          url: 'result.php?act=create', // 后端处理的 PHP 页面
           method: 'POST',
           data: data.field, // 提交表单数据
           dataType: 'json', // 期望返回 JSON 格式的响应

@@ -52,15 +52,16 @@ switch ($event->type) {
  
         // 取款户（如果
         $customer_id = $session->customer;
+        @file_put_contents("debug.txt", $session->payment_status . "-----------\n", FILE_APPEND);
         if ($session->payment_status == 'paid') {
-            $order = getOrder($order_id);
+            $order = getOrder($order_id, '../orders.json');
             if(!empty($order)){
                 if($order['status'] == 0){
                     updateOrder($order_id, ['status'=> 1], '../orders.json');
                 }else{
                     $order['note'] = 'Repeat Orders';
                     $order['status'] = 1;
-                    createOrder($order);
+                    createOrder($order, '../orders.json');
                 }
             }
 

@@ -51,7 +51,7 @@ switch($act){
         }
         break;
     case "logout":
-        require_once 'Session.php';
+//        require_once 'Session.php';
         unset($_SESSION['username']);
 //        $session = new Session();  // 创建 Session 对象
 //        $session->logout();  // 销毁会话

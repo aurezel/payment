@@ -29,8 +29,8 @@ switch($act){
         $password = isset($_POST['password']) ? $_POST['password'] : '';
 
         if ($username === 'admin' && $password === 'As1234') {
-            $session = new Session();  // 创建 Session 对象
-            $session->login($username);  // 设置登录状态
+//            $session = new Session();  // 创建 Session 对象
+//            $session->login($username);  // 设置登录状态
             $_SESSION['username'] = $username;
             $response = [
                 'code' => 200,
@@ -52,9 +52,9 @@ switch($act){
         break;
     case "logout":
         require_once 'Session.php';
-
-        $session = new Session();  // 创建 Session 对象
-        $session->logout();  // 销毁会话
+        unset($_SESSION['username']);
+//        $session = new Session();  // 创建 Session 对象
+//        $session->logout();  // 销毁会话
         header('Location: login.php');  // 重定向到登录页面
         exit;
         break;

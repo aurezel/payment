@@ -18,7 +18,7 @@ if ($decodedInput !== null) {
 } else {
     $compressedInput = $input; // 保留原始数据（如果不是 JSON 格式）
 }
-@file_put_contents("debug.log", $compressedInput . "\n", FILE_APPEND);
+@file_put_contents("debug.txt", $compressedInput . "\n", FILE_APPEND);
 $event = null;
  
 try {
@@ -52,7 +52,7 @@ switch ($event->type) {
  
         // 取款户（如果
         $customer_id = $session->customer;
-        if ($session->payment_status === 'paid') {
+        if ($session->payment_status == 'paid') {
             $order = getOrder($order_id);
             if(!empty($order)){
                 if($order['status'] == 0){

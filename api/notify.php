@@ -20,6 +20,8 @@ if ($decodedInput !== null) {
     $compressedInput = $input; // 保留原始数据（如果不是 JSON 格式）
 }
 @file_put_contents("debug.txt", $compressedInput . "\n==================".date("Y-m-d H:i:s")."show all=====================\n", FILE_APPEND);
+
+
 $event = null;
 
 try {

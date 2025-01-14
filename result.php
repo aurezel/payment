@@ -248,10 +248,6 @@ switch($act){
         $response = $data;
 
         break;
-    case 'test':
-echo 'baidu';
-        var_dump(CURRENCY_CONVERSION);
-        break;
 }
 echo json_encode($response);exit;
 

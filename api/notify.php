@@ -4,8 +4,8 @@ require '../vendor/autoload.php';
 require '../config.php';
 
 // 设置 Stripe API 密
-\Stripe\Stripe::setApiKey(PERMARY_KEY_LIVE);
-
+//\Stripe\Stripe::setApiKey(PERMARY_KEY_LIVE);
+\Stripe\Stripe::setApiKey(SECRET_KEY_LIVE);
 // Webhook secret来自 Stripe Dashboard）
 $endpoint_secret = WEBHOOK_KEY; // "whsec_BZF7iXTP9IW9wDeIwRasskPiFmUYq9xK";//"whsec_o9XGwy4CjmROFwT5D3jkMnx1FLe5q0Hf";
 
@@ -50,51 +50,30 @@ switch ($event->type) {
 //        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
-        @file_put_contents("debugmany.txt",  $charge.":end 1 \n\n\n\n", FILE_APPEND);
         $paymentIntentId = $charge->payment_intent;
         $transactionNumber = $charge->id;
+        @file_put_contents("debugmany.txt",  "\nstart ************************start\n", FILE_APPEND);
+//        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
+        // 获取订单 ID
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
-        @file_put_contents("debugmany.txt",  $paymentIntent.":end 2 \n\n\n\n", FILE_APPEND);
-// 检查是否成功获取到 PaymentIntent 对象
-        try {
-            // 通过 PaymentIntent ID 获取 PaymentIntent
-            $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+        @file_put_contents("debugm.txt",  $paymentIntent."\n\n\n\n", FILE_APPEND);
+        $orderId = $paymentIntent->metadata->order_id;
+        @file_put_contents("debugm.txt",  "test\n".$paymentIntent."\n\n\n\n", FILE_APPEND);
+        $data = [];
+        $data['status'] = 1;
+        $data['transactionNumber'] = $transactionNumber;
+        @file_put_contents("debugm.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
 
-            // 继续处理获取到的 PaymentIntent 信息
-            @file_put_contents("debugm.txt", print_r($paymentIntent, true) . "\n", FILE_APPEND);
-        } catch (\Stripe\Exception\ApiErrorException $e) {
-            // 捕获 Stripe API 错误并记录
-            @file_put_contents("debugm.txt", "Stripe API error: " . $e->getMessage() . "\n", FILE_APPEND);
-        } catch (Exception $e) {
-            // 捕获其他错误并记录
-            @file_put_contents("debugm.txt", "General error: " . $e->getMessage() . "\n", FILE_APPEND);
+        // 更新数据库中的订单状态为支付成功
+        $order = getOrder($orderId, '../orders.json');
+        if ($order['status'] == 1) {
+            $order['note'] = 'Repeat Orders';
+            $order['transactionNumber'] = $transactionNumber;
+            createOrder($order, 'orders.json');
+         } else {
+            $data['status'] = 1;
+            updateOrder($orderId, $data, '../orders.json');
         }
-//        $charge = $event->data->object;
-//        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);
-//        $paymentIntentId = $charge->payment_intent;
-//        $transactionNumber = $charge->id;
-////        @file_put_contents("debugmany.txt",  $event->type."\n", FILE_APPEND);
-////        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
-//        // 获取订单 ID
-//        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
-//        @file_put_contents("debugm.txt",  $paymentIntent."\n", FILE_APPEND);
-//        $orderId = $paymentIntent->metadata->order_id;
-//        @file_put_contents("debugmany.txt",  "test\n".$paymentIntent."\n", FILE_APPEND);
-//        $data = [];
-//        $data['status'] = 1;
-//        $data['transactionNumber'] = $transactionNumber;
-//        @file_put_contents("debug2.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
-//
-//        // 更新数据库中的订单状态为支付成功
-//        $order = getOrder($orderId, '../orders.json');
-//        if ($order['status'] == 1) {
-//            $order['note'] = 'Repeat Orders';
-//            $order['transactionNumber'] = $transactionNumber;
-//            createOrder($order, 'orders.json');
-//         } else {
-//            $data['status'] = 1;
-//            updateOrder($orderId, $data, '../orders.json');
-//        }
 //        @file_put_contents("debug2.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
 
         break;

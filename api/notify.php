@@ -50,11 +50,11 @@ switch ($event->type) {
 //        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
-//        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);
+        @file_put_contents("debugmany.txt",  $charge.":end 1 \n\n\n\n", FILE_APPEND);
         $paymentIntentId = $charge->payment_intent;
         $transactionNumber = $charge->id;
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
-
+        @file_put_contents("debugmany.txt",  $paymentIntent.":end 2 \n\n\n\n", FILE_APPEND);
 // 检查是否成功获取到 PaymentIntent 对象
         if ($paymentIntent) {
             // 打印 debug 信息，查看 PaymentIntent 的内容

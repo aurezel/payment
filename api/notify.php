@@ -48,11 +48,11 @@ try {
 switch ($event->type) {
     case 'checkout.session.completed':
         $checkout = $event->data->object;
-        $checkout->metadata->order_id;
+        $orderId = $checkout->metadata->order_id;
         $paymentIntentId = $checkout->payment_intent;
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
         $transactionNumber = $paymentIntent->latest_charge;
-        @file_put_contents("debugOne.txt",  $checkout."\n\n\npaymentIntent".$paymentIntent, FILE_APPEND);
+        @file_put_contents("debugOne.txt",  "************************start\n\n\n".$orderId."\n\n\ntransactionNumber".$transactionNumber, FILE_APPEND);
         break;
 //    case 'payment_intent.succeeded':
 //        $payment_intent = $event->data->object;

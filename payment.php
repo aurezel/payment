@@ -14,27 +14,21 @@ require 'config.php';
   
 </head>
 <body>
-<?php 
-    $indexedData = [];
-    
-    
-    $orders = readOrders();
-    foreach ($orders as $order) {
-        $indexedData[$order['orderId']] = $order;
-    }
+<?php
     $order_id = $_GET['order_id'];
-    if(empty($order_id) || !isset($indexedData[$order_id])){
-        header("Location: index.html");
+    $order = getOrder($order_id);
+    if(empty($order_id) || empty($order)){
+        header("Location: api/cancel.html");
     }
    
    $limitCurrency = unserialize(CURRENCY_LIMIT);
 $amountText = '';
-if(in_array($indexedData[$order_id]['currency'],$limitCurrency)){
-	$amountText = $indexedData[$order_id]['amount'];
+if(in_array($order['currency'],$limitCurrency)){
+	$amountText = $order['amount'];
 }else{
-	$amountText = number_format($indexedData[$order_id]['amount'],2);
+	$amountText = number_format($order['amount'],2);
 }
-$amountText .= " " . $indexedData[$order_id]['currency'];	    
+$amountText .= " " . $order['currency'];
 ?>
  
  
@@ -347,7 +341,7 @@ input::-webkit-input-placeholder {
                             
                             <li>
                                 <div class="name">Name:</div>
-                                <div class="value" style="font-weight:bold"><?php echo $indexedData[$order_id]['name'];?></div>
+                                <div class="value" style="font-weight:bold"><?php echo $order['name'];?></div>
                             </li>
                             <li>
                                 <div class="name">Total:</div>
@@ -424,7 +418,7 @@ input::-webkit-input-placeholder {
                     <div class="">
                         <div id="wap_three_nested_paypal_warp" class="three_nested_paypal_warp"></div>
                         
-                        <a class="order_btn save_address_btn control-checkout-pay_btn" style="background: #F13A3A;display: block;" id="save_payment_btn" href="<?php echo DOMAIN_PATH.'paying.php?order_id='. $_GET['order_id'];?>">
+                        <a class="order_btn save_address_btn control-checkout-pay_btn" style="background: #F13A3A;display: block;" id="save_payment_btn" href="<?php echo DOMAIN_PATH.'result.php?act=topay&order_id='. $_GET['order_id'];?>">
                             <div class="save_address_btn_text">
                                 <span>Continue to Payment </span>
                             </div>

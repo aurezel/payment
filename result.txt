@@ -214,7 +214,7 @@ switch($act){
 //                    'status0Count' => 0,   // 状态为0的订单数
                     'status1Amount' => 0,   // 状态为0的订单数
                     'status1Count' => 0,   // 状态为0的订单数
-                    'currency' => 'USD' //$currency
+                    'currency' => $currency
                 ];
             }
 
@@ -234,22 +234,19 @@ switch($act){
                     $statistics[$date]['status1Amount'] += (float)$order['amount'];
                 }
 		
-	    
-	    }
-//	 echo $currency.CURRENCY_CONVERSION[$currency]."|".$order['amount']."|".((float)$order['amount'] / CURRENCY_CONVERSION[$currency]).'|'.$statistics[$date]['totalAmount']."|".$statistics[$date]['createTime']."\n";
-	}
+            }
 	$page = count($statistics) / 20;
         $data = [];
         $data['code'] = 0;
         $data['data']['total'] = count($statistics);
         $data['data']['pages'] = ceil($page);
-        $data['data']['content'] = array_reverse(array_values($statistics));
+        $data['data']['content'] = array_reverse($statistics);
         $response = $data;
 
         break;
     case 'test':
 echo 'baidu';
-        var_dump(CURRENCY_CONVERSION);
+//        var_dump(CURRENCY_CONVERSION);
         break;
 }
 echo json_encode($response);exit;

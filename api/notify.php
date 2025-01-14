@@ -52,13 +52,13 @@ switch ($event->type) {
         $charge = $event->data->object;
         $paymentIntentId = $charge->payment_intent;
         $transactionNumber = $charge->id;
-        @file_put_contents("debugmany.txt",  "\nstart ************************start\n", FILE_APPEND);
+        @file_put_contents("debugmany.txt",  "{$transactionNumber}\nstart ************************start\n", FILE_APPEND);
 //        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
         // 获取订单 ID
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
-        @file_put_contents("debugm.txt",  $paymentIntent."\n\n\n\n", FILE_APPEND);
+        @file_put_contents("debugm.txt",  "start paymentintent:\n".$paymentIntent."\n\n\n\n", FILE_APPEND);
         $orderId = $paymentIntent->metadata->order_id;
-        @file_put_contents("debugm.txt",  "test\n".$paymentIntent."\n\n\n\n", FILE_APPEND);
+        @file_put_contents("debugm.txt",  "test\n".$orderId."\n\n\n\n", FILE_APPEND);
         $data = [];
         $data['status'] = 1;
         $data['transactionNumber'] = $transactionNumber;

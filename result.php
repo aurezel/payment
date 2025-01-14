@@ -98,6 +98,7 @@ switch($act){
             'currency' => $currency,
             'status' => 0,  // 订单状态 0 代表未支付
             'paymentTime' => date("Y-m-d H:i:s"),
+            'transaction_number' => "",
             'note' => '',
         ];
 

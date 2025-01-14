@@ -122,7 +122,7 @@ if(!$_SESSION['username']){
                             {field: 'transactionNumber', title: '交易号',
                                 templet: function(d) {
                                     // 如果 transactionNumber 不存在，显示默认文本
-                                    return d.transactionNumber ? d.transactionNumber : '暂无交易号';
+                                    return d.transactionNumber ? d.transactionNumber : '';
                                 }
                             },
                             {field: 'name', title: '用户名'}, // 新增的列

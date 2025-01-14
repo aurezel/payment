@@ -88,17 +88,19 @@ switch ($event->type) {
         $orderId = $paymentIntent->metadata->order_id;
         $data = [];
         $data['status'] = 1;
-        $data['transaction_number'] = $transactionNumber;
+        $data['transactionNumber'] = $transactionNumber;
         // 更新数据库中的订单状态为支付成功
         $order = getOrder($orderId, '../orders.json');
         if ($order['status'] == 1) {
             $order['note'] = 'Repeat Orders';
-            $order['transaction_number'] = $transactionNumber;
+            $order['transactionNumber'] = $transactionNumber;
             createOrder($order, 'orders.json');
          } else {
             $data['status'] = 1;
             updateOrder($orderId, $data, '../orders.json');
         }
+        @file_put_contents("debug.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
+
         break;
     case 'charge.failed':
         $charge = $event->data->object;

@@ -52,7 +52,18 @@ switch ($event->type) {
         $paymentIntentId = $checkout->payment_intent;
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
         $transactionNumber = $paymentIntent->latest_charge;
-        @file_put_contents("debugOne.txt",  "************************start\n\n\n".$orderId."\n\n\ntransactionNumber".$transactionNumber, FILE_APPEND);
+        $order = getOrder($orderId, '../orders.json');
+        if ($order['status'] == 1) {
+            $order['note'] = 'Repeat Orders';
+            $order['transactionNumber'] = $transactionNumber;
+            createOrder($order, 'orders.json');
+         } else {
+            $data = [];
+            $data['status'] = 1;
+            $data['transactionNumber'] = $transactionNumber;
+            updateOrder($orderId, $data, '../orders.json');
+        }
+
         break;
 //    case 'payment_intent.succeeded':
 //        $payment_intent = $event->data->object;
@@ -67,7 +78,7 @@ switch ($event->type) {
         @file_put_contents("debugCharge.txt",  "{$charge}\nstart ************************start\n", FILE_APPEND);
 //        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
         // 获取订单 ID
-//        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
 //        @file_put_contents("debugm.txt",  "start paymentintent:\n".$paymentIntent."\n\n\n\n", FILE_APPEND);
 //        $orderId = $paymentIntent->metadata->order_id;
 //        @file_put_contents("debugm.txt",  "test\n".$orderId."\n\n\n\n", FILE_APPEND);

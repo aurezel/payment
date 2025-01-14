@@ -46,8 +46,14 @@ try {
 @file_put_contents("debugEvent.txt",  $event->type."\n\n", FILE_APPEND);
 // 成payment_intent.succeeded
 switch ($event->type) {
-//    case 'checkout.session.completed':
-//        break;
+    case 'checkout.session.completed':
+        $checkout = $event->data->object;
+        $checkout->metadata->order_id;
+        $paymentIntentId = $checkout->payment_intent;
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+        $transactionNumber = $paymentIntent->latest_charge;
+        @file_put_contents("debugOne.txt",  $checkout."\n\n\npaymentIntent".$paymentIntent, FILE_APPEND);
+        break;
 //    case 'payment_intent.succeeded':
 //        $payment_intent = $event->data->object;
 //        $paymentIntentId = $charge->payment_intent;

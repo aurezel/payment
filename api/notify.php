@@ -43,11 +43,17 @@ try {
     exit();
 }
 
-@file_put_contents("debugEvent.txt",  $event->type."\n", FILE_APPEND);
+@file_put_contents("debugEvent.txt",  $event->type."\n\n", FILE_APPEND);
 // 成payment_intent.succeeded
 switch ($event->type) {
 //    case 'checkout.session.completed':
 //        break;
+    case 'payment_intent.succeeded':
+        $payment_intent = $event->data->object;
+//        $paymentIntentId = $payment_intent->payment_intent;
+//        $transactionNumber = $charge->id;
+        @file_put_contents("debugmn.txt",  "{$payment_intent}\nstart ************************start\n", FILE_APPEND);
+        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
         $paymentIntentId = $charge->payment_intent;

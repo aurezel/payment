@@ -81,7 +81,7 @@ switch ($event->type) {
     case 'charge.succeeded':
         $charge = $event->data->object;
         $paymentIntentId = $charge->payment_intent;
-        $transactionNumber = $charge->transaction_number;
+        $transactionNumber = $charge->id;
 
         // 获取订单 ID
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
@@ -89,6 +89,8 @@ switch ($event->type) {
         $data = [];
         $data['status'] = 1;
         $data['transactionNumber'] = $transactionNumber;
+        @file_put_contents("debug.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
+
         // 更新数据库中的订单状态为支付成功
         $order = getOrder($orderId, '../orders.json');
         if ($order['status'] == 1) {

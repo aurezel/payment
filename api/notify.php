@@ -48,12 +48,12 @@ try {
 switch ($event->type) {
 //    case 'checkout.session.completed':
 //        break;
-    case 'payment_intent.succeeded':
-        $payment_intent = $event->data->object;
-        $paymentIntentId = $charge->payment_intent;
-        $transactionNumber = $charge->id;
-        @file_put_contents("debugmn.txt",  "{$transactionNumber}\nstart ************************start\n", FILE_APPEND);
-        break;
+//    case 'payment_intent.succeeded':
+//        $payment_intent = $event->data->object;
+//        $paymentIntentId = $charge->payment_intent;
+//        $transactionNumber = $charge->id;
+//        @file_put_contents("debugmn.txt",  "{$transactionNumber}\nstart ************************start\n", FILE_APPEND);
+//        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
         $paymentIntentId = $charge->payment_intent;

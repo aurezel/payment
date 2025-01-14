@@ -19,7 +19,7 @@ if ($decodedInput !== null) {
 } else {
     $compressedInput = $input; // 保留原始数据（如果不是 JSON 格式）
 }
-@file_put_contents("debug.txt", $compressedInput . "\n==================".date("Y-m-d H:i:s")."show all=====================\n", FILE_APPEND);
+@file_put_contents("debugok.txt", $compressedInput . "\n==================".date("Y-m-d H:i:s")."show all=====================\n", FILE_APPEND);
 
 
 $event = null;
@@ -42,42 +42,12 @@ try {
     echo 'Invalid signature';
     exit();
 }
+
+@file_put_contents("debugEvent.txt",  $event->type."\n", FILE_APPEND);
 // 成payment_intent.succeeded
 switch ($event->type) {
-    case 'checkout.session.completed':
-//        $session = $event->data->object; // 取 Checkout Session 对
-//
-//        // 取传的 order_id
-//        $order_id = $session->metadata->order_id;
-//
-//        // 取金额
-//        $amount_total = $session->amount_total;  // 总金额
-//	    $payment_intent = $session->payment_intent;
-//
-//        // 取款户（如果
-//        $customer_id = $session->customer;
-//        @file_put_contents("debugCheckout.txt", $session->payment_status . "\n---------------checkout-----------\n", FILE_APPEND);
-//        if ($session->payment_status == 'paid') {
-//            $order = getOrder($order_id, '../orders.json');
-//            $data = [];
-//            if ($_SESSION['_payment']['payment_intent'] == $payment_intent) {
-//                $data['transcation_number'] = $_SESSION['_payment']['transcation_number'];
-//            }
-//            if (!empty($order)) {
-//                $data['status'] = 1;
-//                if ($order['status'] == 0) {
-//                    updateOrder($order_id, $data, '../orders.json');
-//                } else {
-//                    $order['note'] = 'Repeat Orders';
-//                    $order['status'] = 1;
-//                    createOrder($order, '../orders.json');
-//                }
-//                unset($_SESSION['_payment']);
-//            }
-//        }
-//        // 这行外的操发件、更库存等
-//        error_log("Payment for Order $order_id was successful. customer_id ID: {$customer_id}");
-        break;
+//    case 'checkout.session.completed':
+//        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
         $paymentIntentId = $charge->payment_intent;
@@ -89,7 +59,7 @@ switch ($event->type) {
         $data = [];
         $data['status'] = 1;
         $data['transactionNumber'] = $transactionNumber;
-        @file_put_contents("debug.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
+        @file_put_contents("debug2.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
 
         // 更新数据库中的订单状态为支付成功
         $order = getOrder($orderId, '../orders.json');
@@ -101,7 +71,7 @@ switch ($event->type) {
             $data['status'] = 1;
             updateOrder($orderId, $data, '../orders.json');
         }
-        @file_put_contents("debug.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
+//        @file_put_contents("debug2.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
 
         break;
     case 'charge.failed':

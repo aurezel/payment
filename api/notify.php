@@ -50,31 +50,52 @@ switch ($event->type) {
 //        break;
     case 'charge.succeeded':
         $charge = $event->data->object;
-        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);
+//        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);
         $paymentIntentId = $charge->payment_intent;
         $transactionNumber = $charge->id;
-//        @file_put_contents("debugmany.txt",  $event->type."\n", FILE_APPEND);
-//        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
-        // 获取订单 ID
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
-        @file_put_contents("debugm.txt",  $paymentIntent."\n", FILE_APPEND);
-        $orderId = $paymentIntent->metadata->order_id;
-        @file_put_contents("debugmany.txt",  "test\n".$paymentIntent."\n", FILE_APPEND);
-        $data = [];
-        $data['status'] = 1;
-        $data['transactionNumber'] = $transactionNumber;
-        @file_put_contents("debug2.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
 
-        // 更新数据库中的订单状态为支付成功
-        $order = getOrder($orderId, '../orders.json');
-        if ($order['status'] == 1) {
-            $order['note'] = 'Repeat Orders';
-            $order['transactionNumber'] = $transactionNumber;
-            createOrder($order, 'orders.json');
-         } else {
-            $data['status'] = 1;
-            updateOrder($orderId, $data, '../orders.json');
+// 检查是否成功获取到 PaymentIntent 对象
+        if ($paymentIntent) {
+            // 打印 debug 信息，查看 PaymentIntent 的内容
+            @file_put_contents("debugm.txt", "start***************start:".print_r($paymentIntent, true) . "\n", FILE_APPEND);
+
+            // 检查是否有 metadata 并且包含 order_id
+            if (isset($paymentIntent->metadata) && isset($paymentIntent->metadata->order_id)) {
+                $orderId = $paymentIntent->metadata->order_id;
+            } else {
+                // 如果没有找到 order_id，输出相应的调试信息
+                @file_put_contents("debugm.txt", "Order ID not found in metadata.\n", FILE_APPEND);
+            }
+        } else {
+            @file_put_contents("debugm.txt", "Failed to retrieve PaymentIntent.\n", FILE_APPEND);
         }
+//        $charge = $event->data->object;
+//        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);
+//        $paymentIntentId = $charge->payment_intent;
+//        $transactionNumber = $charge->id;
+////        @file_put_contents("debugmany.txt",  $event->type."\n", FILE_APPEND);
+////        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
+//        // 获取订单 ID
+//        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+//        @file_put_contents("debugm.txt",  $paymentIntent."\n", FILE_APPEND);
+//        $orderId = $paymentIntent->metadata->order_id;
+//        @file_put_contents("debugmany.txt",  "test\n".$paymentIntent."\n", FILE_APPEND);
+//        $data = [];
+//        $data['status'] = 1;
+//        $data['transactionNumber'] = $transactionNumber;
+//        @file_put_contents("debug2.txt",  "\n==================".$orderId."show order_id=====================\n", FILE_APPEND);
+//
+//        // 更新数据库中的订单状态为支付成功
+//        $order = getOrder($orderId, '../orders.json');
+//        if ($order['status'] == 1) {
+//            $order['note'] = 'Repeat Orders';
+//            $order['transactionNumber'] = $transactionNumber;
+//            createOrder($order, 'orders.json');
+//         } else {
+//            $data['status'] = 1;
+//            updateOrder($orderId, $data, '../orders.json');
+//        }
 //        @file_put_contents("debug2.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
 
         break;

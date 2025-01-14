@@ -119,7 +119,7 @@ if(!$_SESSION['username']){
                         data: data.content, // 渲染的订单数据
                         cols: [[
                             {field: 'orderId', title: '订单号'},
-                            {field: 'transactionNumber', title: '交易号'
+                            {field: 'transactionNumber', title: '交易号',
                                 templet: function(d) {
                                     // 如果 transactionNumber 不存在，显示默认文本
                                     return d.transactionNumber ? d.transactionNumber : '暂无交易号';

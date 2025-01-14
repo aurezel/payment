@@ -56,19 +56,18 @@ switch ($event->type) {
         $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
         @file_put_contents("debugmany.txt",  $paymentIntent.":end 2 \n\n\n\n", FILE_APPEND);
 // 检查是否成功获取到 PaymentIntent 对象
-        if ($paymentIntent) {
-            // 打印 debug 信息，查看 PaymentIntent 的内容
-            @file_put_contents("debugm.txt", "start***************start:".print_r($paymentIntent, true) . "\n", FILE_APPEND);
+        try {
+            // 通过 PaymentIntent ID 获取 PaymentIntent
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
 
-            // 检查是否有 metadata 并且包含 order_id
-            if (isset($paymentIntent->metadata) && isset($paymentIntent->metadata->order_id)) {
-                $orderId = $paymentIntent->metadata->order_id;
-            } else {
-                // 如果没有找到 order_id，输出相应的调试信息
-                @file_put_contents("debugm.txt", "Order ID not found in metadata.\n", FILE_APPEND);
-            }
-        } else {
-            @file_put_contents("debugm.txt", "Failed to retrieve PaymentIntent.\n", FILE_APPEND);
+            // 继续处理获取到的 PaymentIntent 信息
+            @file_put_contents("debugm.txt", print_r($paymentIntent, true) . "\n", FILE_APPEND);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // 捕获 Stripe API 错误并记录
+            @file_put_contents("debugm.txt", "Stripe API error: " . $e->getMessage() . "\n", FILE_APPEND);
+        } catch (Exception $e) {
+            // 捕获其他错误并记录
+            @file_put_contents("debugm.txt", "General error: " . $e->getMessage() . "\n", FILE_APPEND);
         }
 //        $charge = $event->data->object;
 //        @file_put_contents("debugmany.txt",  $charge."\n\n\n\n", FILE_APPEND);

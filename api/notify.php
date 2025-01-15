@@ -59,7 +59,7 @@ switch ($event->type) {
             createOrder($order, 'orders.json');
          } else {
             $data = [];
-            $data['status'] = 1;
+//            $data['status'] = 1;
             $data['transactionNumber'] = $transactionNumber;
             updateOrder($orderId, $data, '../orders.json');
         }
@@ -71,14 +71,18 @@ switch ($event->type) {
 //        $transactionNumber = $charge->id;
 //        @file_put_contents("debugmn.txt",  "{$transactionNumber}\nstart ************************start\n", FILE_APPEND);
 //        break;
+    case 'charge.failed':
+        $charge = $event->data->object;
+        @file_put_contents("debugfailure.txt",  "{$charge}\nstart ************************start\n", FILE_APPEND);
     case 'charge.succeeded':
         $charge = $event->data->object;
-        $paymentIntentId = $charge->payment_intent;
-        $transactionNumber = $charge->id;
-        @file_put_contents("debugCharge.txt",  "{$charge}\nstart ************************start\n", FILE_APPEND);
-//        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
-        // 获取订单 ID
-        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+        @file_put_contents("debugscccess.txt",  "{$charge}\nstart ************************start\n", FILE_APPEND);
+//        $paymentIntentId = $charge->payment_intent;
+//        $transactionNumber = $charge->id;
+//        @file_put_contents("debugCharge.txt",  "{$charge}\nstart ************************start\n", FILE_APPEND);
+////        @file_put_contents("debugmany.txt",  $paymentIntentId.' '.$transactionNumber."xx\n", FILE_APPEND);
+//        // 获取订单 ID
+//        $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
 //        @file_put_contents("debugm.txt",  "start paymentintent:\n".$paymentIntent."\n\n\n\n", FILE_APPEND);
 //        $orderId = $paymentIntent->metadata->order_id;
 //        @file_put_contents("debugm.txt",  "test\n".$orderId."\n\n\n\n", FILE_APPEND);
@@ -100,21 +104,21 @@ switch ($event->type) {
 //        @file_put_contents("debug2.txt", "\n".json_encode($data) . "\n==================".date("Y-m-d H:i:s")."show success=====================\n", FILE_APPEND);
 
         break;
-    case 'charge.failed':
-        $charge = $event->data->object;
-        $orderId = $charge->metadata->order_id; // 如果你在 charge 中存储了 order_id
-        $failureMessage = $charge->failure_message; // 获取失败的原因
-        // 更新数据库中的订单状态为失败，并记录失败原因
-        updateOrder($orderId, ['status'=>2,'note'=>$failureMessage], '../orders.json');
-        break;
-    case "payment_intent.payment_failed":
-        $paymentIntent = $event->data->object;
-        $orderId = $paymentIntent->metadata->order_id;
-        $failureMessage = $paymentIntent->last_payment_error->message;  // 获取失败原因
-
-        // 更新数据库中的订单状态为失败，并记录失败原因
-        updateOrder($orderId, ['status'=>2,'note'=>$failureMessage], '../orders.json');
-        break;
+//    case 'charge.failed':
+//        $charge = $event->data->object;
+//        $orderId = $charge->metadata->order_id; // 如果你在 charge 中存储了 order_id
+//        $failureMessage = $charge->failure_message; // 获取失败的原因
+//        // 更新数据库中的订单状态为失败，并记录失败原因
+//        updateOrder($orderId, ['status'=>2,'note'=>$failureMessage], '../orders.json');
+//        break;
+//    case "payment_intent.payment_failed":
+//        $paymentIntent = $event->data->object;
+//        $orderId = $paymentIntent->metadata->order_id;
+//        $failureMessage = $paymentIntent->last_payment_error->message;  // 获取失败原因
+//
+//        // 更新数据库中的订单状态为失败，并记录失败原因
+//        updateOrder($orderId, ['status'=>2,'note'=>$failureMessage], '../orders.json');
+//        break;
     default:
         // 事没处
         error_log('Unhandled event type ' . $event->type);

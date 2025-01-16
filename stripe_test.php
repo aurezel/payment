@@ -30,13 +30,47 @@ function stripe_payout_charge(){
             echo "提现金额: " . ($payout->amount / 100) . " " . strtoupper($payout->currency) . "<br>";
             echo "提现状态: " . $payout->status . "<br>";
             echo "创建时间: " . date('Y-m-d H:i:s', $payout->created) . "<br><br>";
+            stripe_transaction_list($payout->id);
         }
 
     } catch (\Stripe\Exception\ApiErrorException $e) {
         echo "获取提现记录失败: " . $e->getMessage();
     }
 }
+function stripe_transaction_list($payoutId){
+    try {
 
+        // 获取提现记录
+
+        // 获取与提现相关的 Balance Transactions
+        $balanceTransactions = \Stripe\BalanceTransaction::all([
+            'payout' => $payoutId,
+            'limit' => 50
+        ]);
+        echo '<pre>';
+        print_r($balanceTransactions);
+        echo '</pre>';
+        // 遍历 Balance Transactions 并获取订单信息
+        foreach ($balanceTransactions->data as $transaction) {
+            echo "交易 ID: " . $transaction->id . "<br>";
+            echo "交易金额: " . ($transaction->amount / 100) . " " . strtoupper($transaction->currency) . "<br>";
+            echo "交易类型: " . $transaction->type . "<br>";
+            echo "关联订单（Source ID）: " . $transaction->source . "<br>";
+            echo "交易创建时间: " . date('Y-m-d H:i:s', $transaction->created) . "<br><br>";
+
+            // 如果 source 是 Charge，获取订单详情
+            if (strpos($transaction->source, 'ch_') === 0) {
+                $charge = \Stripe\Charge::retrieve($transaction->source);
+                echo "-- 订单金额: " . ($charge->amount / 100) . " " . strtoupper($charge->currency) . "<br>";
+                echo "-- 订单状态: " . $charge->status . "<br>";
+                echo "-- 订单创建时间: " . date('Y-m-d H:i:s', $charge->created) . "<br><br>";
+            }
+        }
+
+    } catch (\Stripe\Exception\ApiErrorException $e) {
+        echo "获取提现记录失败: " . $e->getMessage();
+    }
+}
 function stripe_checkout_cart(){
     \Stripe\Stripe::setApiKey(SECRET_KEY_LIVE);
     try {
